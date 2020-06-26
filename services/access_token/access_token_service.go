@@ -1,11 +1,20 @@
 package access_token
 
 import (
-	"github.com/pastukhov-aleksandr/bookstore_aouth_api/src/domain/access_token"
-	"github.com/pastukhov-aleksandr/bookstore_aouth_api/src/repositore/db"
-	"github.com/pastukhov-aleksandr/bookstore_aouth_api/src/repositore/rest"
-	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
+	"log"
+	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
+	"github.com/pastukhov-aleksandr/bookstore_aouth_api/domain/access_token"
+	"github.com/pastukhov-aleksandr/bookstore_aouth_api/repositore/db"
+	"github.com/pastukhov-aleksandr/bookstore_aouth_api/repositore/rest"
+	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
+)
+
+const (
+	ACCESS_SECRET  = "ACCESS_SECRET"
+	REFRESH_SECRET = "REFRESH_SECRET"
 )
 
 type Service interface {
@@ -45,17 +54,31 @@ func (s *service) Create(request access_token.AccessTokenRequest) (*access_token
 
 	//TODO: Support both grant types: client_credentials and password
 
-	// Authenticate the user against the Users API:
-	user, err := s.restUsersRepo.LoginUser(request.Username, request.Password)
-	if err != nil {
+	// Если нужна авторизация:
+	// user, err := s.restUsersRepo.LoginUser(request.Username, request.Password)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// Generate a new access token:
+	if err := godotenv.Load(); err != nil {
+		log.Println(".env file not found")
+		return nil, rest_errors.NewBadRequestError("invalid access token")
+	}
+
+	at := access_token.GetNewAccessToken(request.UserID)
+	at.ClientID = request.ClientID
+	if len(request.UuID) > 0 {
+		at.AccessUuID = request.UuID
+	}
+
+	var access_sicret = getEnv(ACCESS_SECRET, "")
+	var refresh_sicret = getEnv(REFRESH_SECRET, "")
+	if err := at.Generate(access_sicret, refresh_sicret); err != nil {
 		return nil, err
 	}
 
-	// Generate a new access token:
-	at := access_token.GetNewAccessToken(user.Id)
-	at.Generate()
-
-	// Save the new access token in Cassandra:
+	// Save the new refresh access token in Cassandra:
 	if err := s.dbRepo.Create(at); err != nil {
 		return nil, err
 	}
@@ -67,4 +90,11 @@ func (s *service) UpdateExpirationTime(at access_token.AccessToken) rest_errors.
 		return err
 	}
 	return s.dbRepo.UpdateExpirationTime(at)
+}
+
+func getEnv(key string, defaultVal string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultVal
 }

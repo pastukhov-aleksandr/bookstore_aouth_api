@@ -2,16 +2,18 @@ package db
 
 import (
 	"errors"
+	"time"
+
 	"github.com/gocql/gocql"
-	"github.com/pastukhov-aleksandr/bookstore_aouth_api/src/clients/cassandra"
-	"github.com/pastukhov-aleksandr/bookstore_aouth_api/src/domain/access_token"
+	"github.com/pastukhov-aleksandr/bookstore_aouth_api/clients/cassandra"
+	"github.com/pastukhov-aleksandr/bookstore_aouth_api/domain/access_token"
 	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
 )
 
 const (
-	queryGetAccessToken    = "SELECT access_token, user_id, client_id, expires FROM access_tokens WHERE access_token=?;"
-	queryCreateAccessToken = "INSERT INTO access_tokens(access_token, user_id, client_id, expires) VALUES (?, ?, ?, ?);"
-	queryUpdateExpires     = "UPDATE access_tokens SET expires=? WHERE access_token=?;"
+	queryGetAccessToken    = "SELECT refresh_tokens, user_id, client_id, expires FROM refresh_tokens WHERE refresh_tokens=?;"
+	queryCreateAccessToken = "INSERT INTO refresh_tokens(uuid, user_id, client_id, now) VALUES (?, ?, ?, ?);"
+	queryUpdateExpires     = "UPDATE refresh_tokens SET expires=? WHERE refresh_tokens=?;"
 )
 
 func NewRepository() DbRepository {
@@ -31,8 +33,8 @@ func (r *dbRepository) GetById(id string) (*access_token.AccessToken, rest_error
 	var result access_token.AccessToken
 	if err := cassandra.GetSession().Query(queryGetAccessToken, id).Scan(
 		&result.AccessToken,
-		&result.UserId,
-		&result.ClientId,
+		&result.UserID,
+		&result.ClientID,
 		&result.Expires,
 	); err != nil {
 		if err == gocql.ErrNotFound {
@@ -45,12 +47,12 @@ func (r *dbRepository) GetById(id string) (*access_token.AccessToken, rest_error
 
 func (r *dbRepository) Create(at access_token.AccessToken) rest_errors.RestErr {
 	if err := cassandra.GetSession().Query(queryCreateAccessToken,
-		at.AccessToken,
-		at.UserId,
-		at.ClientId,
-		at.Expires,
+		at.AccessUuID,
+		at.UserID,
+		at.ClientID,
+		time.Now(),
 	).Exec(); err != nil {
-		return rest_errors.NewInternalServerError("error when trying to save access token in database", err)
+		return rest_errors.NewInternalServerError("error when trying to save refresh token in database", err)
 	}
 	return nil
 }

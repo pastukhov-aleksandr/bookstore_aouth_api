@@ -1,11 +1,12 @@
 package http
 
 import (
-	"github.com/gin-gonic/gin"
-	atDomain "github.com/pastukhov-aleksandr/bookstore_aouth_api/src/domain/access_token"
-	"github.com/pastukhov-aleksandr/bookstore_aouth_api/src/services/access_token"
-	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	atDomain "github.com/pastukhov-aleksandr/bookstore_aouth_api/domain/access_token"
+	"github.com/pastukhov-aleksandr/bookstore_aouth_api/services/access_token"
+	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
 )
 
 type AccessTokenHandler interface {
