@@ -2,19 +2,13 @@ package access_token
 
 import (
 	"log"
-	"os"
 	"strings"
 
-	"github.com/joho/godotenv"
 	"github.com/pastukhov-aleksandr/bookstore_aouth_api/domain/access_token"
 	"github.com/pastukhov-aleksandr/bookstore_aouth_api/repositore/db"
 	"github.com/pastukhov-aleksandr/bookstore_aouth_api/repositore/rest"
+	"github.com/pastukhov-aleksandr/bookstore_aouth_api/utils/secret_code"
 	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
-)
-
-const (
-	ACCESS_SECRET  = "ACCESS_SECRET"
-	REFRESH_SECRET = "REFRESH_SECRET"
 )
 
 type Service interface {
@@ -61,10 +55,6 @@ func (s *service) Create(request access_token.AccessTokenRequest) (*access_token
 	// }
 
 	// Generate a new access token:
-	if err := godotenv.Load(); err != nil {
-		log.Println(".env file not found")
-		return nil, rest_errors.NewBadRequestError("invalid access token")
-	}
 
 	at := access_token.GetNewAccessToken(request.UserID)
 	at.ClientID = request.ClientID
@@ -72,8 +62,14 @@ func (s *service) Create(request access_token.AccessTokenRequest) (*access_token
 		at.AccessUuID = request.UuID
 	}
 
-	var access_sicret = getEnv(ACCESS_SECRET, "")
-	var refresh_sicret = getEnv(REFRESH_SECRET, "")
+	access_sicret := secret_code.Get_ACCESS_SECRET()
+	refresh_sicret := secret_code.Get_REFRESH_SECRET()
+
+	if access_sicret == "" && refresh_sicret == "" {
+		log.Println(".env file not found")
+		return nil, rest_errors.NewBadRequestError("invalid access token")
+	}
+
 	if err := at.Generate(access_sicret, refresh_sicret); err != nil {
 		return nil, err
 	}
@@ -90,11 +86,4 @@ func (s *service) UpdateExpirationTime(at access_token.AccessToken) rest_errors.
 		return err
 	}
 	return s.dbRepo.UpdateExpirationTime(at)
-}
-
-func getEnv(key string, defaultVal string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return defaultVal
 }
