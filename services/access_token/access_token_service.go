@@ -7,14 +7,15 @@ import (
 	"github.com/pastukhov-aleksandr/bookstore_aouth_api/domain/access_token"
 	"github.com/pastukhov-aleksandr/bookstore_aouth_api/repositore/db"
 	"github.com/pastukhov-aleksandr/bookstore_aouth_api/repositore/rest"
-	"github.com/pastukhov-aleksandr/bookstore_aouth_api/utils/secret_code"
 	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
+	"github.com/pastukhov-aleksandr/bookstore_utils-go/secret_code"
 )
 
 type Service interface {
 	GetById(string) (*access_token.AccessToken, rest_errors.RestErr)
 	Create(access_token.AccessTokenRequest) (*access_token.AccessToken, rest_errors.RestErr)
 	UpdateExpirationTime(access_token.AccessToken) rest_errors.RestErr
+	DeleteRefreshToken(access_token.AccessTokenRequest) rest_errors.RestErr
 }
 
 type service struct {
@@ -56,11 +57,7 @@ func (s *service) Create(request access_token.AccessTokenRequest) (*access_token
 
 	// Generate a new access token:
 
-	at := access_token.GetNewAccessToken(request.UserID)
-	at.ClientID = request.ClientID
-	if len(request.UuID) > 0 {
-		at.AccessUuID = request.UuID
-	}
+	at := access_token.GetNewAccessToken(request.UserID, request.ClientID)
 
 	access_sicret := secret_code.Get_ACCESS_SECRET()
 	refresh_sicret := secret_code.Get_REFRESH_SECRET()
@@ -86,4 +83,13 @@ func (s *service) UpdateExpirationTime(at access_token.AccessToken) rest_errors.
 		return err
 	}
 	return s.dbRepo.UpdateExpirationTime(at)
+}
+
+func (s *service) DeleteRefreshToken(request access_token.AccessTokenRequest) rest_errors.RestErr {
+
+	if err := s.dbRepo.DeleteRefreshToken(request.UserID, request.ClientID); err != nil {
+		return err
+	}
+
+	return nil
 }

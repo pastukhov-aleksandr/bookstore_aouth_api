@@ -15,7 +15,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630110526-49a837b846c2
+	github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630121059-8cc33b26fc1d
 	github.com/satori/go.uuid v1.2.0
 	go.uber.org/zap v1.15.0 // indirect
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect

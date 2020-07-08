@@ -1,12 +1,13 @@
 package access_token
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pastukhov-aleksandr/bookstore_utils-go/rest_errors"
-	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -72,13 +73,14 @@ func (at *AccessToken) Validate() rest_errors.RestErr {
 	return nil
 }
 
-func GetNewAccessToken(userId int64) AccessToken {
+func GetNewAccessToken(userId int64, clientId int64) AccessToken {
 	return AccessToken{
 		UserID:         userId,
 		Expires:        time.Now().UTC().Add(expirationTime * time.Minute).Unix(),
 		ExpiresRefresh: time.Now().UTC().Add(refreshExpirationTime * time.Minute).Unix(),
-		AccessUuID:     uuid.NewV4().String(),
+		AccessUuID:     fmt.Sprintf("%s%s", strconv.FormatInt(userId, 10), strconv.FormatInt(clientId, 10)),
 		Permission:     "aouth",
+		ClientID:       clientId,
 	}
 }
 

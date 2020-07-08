@@ -94,6 +94,12 @@ github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200208175057-e5f5c17f
 github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200208175057-e5f5c17f10bd/go.mod h1:e7jnWUlHcFNACxq1+D+TEwKPcBrkZfrLh8NYNHEPnxg=
 github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630110526-49a837b846c2 h1:gfwewaPy70D7tYVJE333SDhWQBogukYXfCm1m6wo88E=
 github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630110526-49a837b846c2/go.mod h1:B/rlgH1yVswD1LvDQ0XzlviPB6v0yF7UHomnc+Nmdn8=
+github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630114825-f5ee69d69d1d h1:NHRq7XUk3RNkwzzZWq9fG5A+irqKTT+qJJqtj0Mpx2c=
+github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630114825-f5ee69d69d1d/go.mod h1:B/rlgH1yVswD1LvDQ0XzlviPB6v0yF7UHomnc+Nmdn8=
+github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630121059-8cc33b26fc1d h1:oxDPUv+XNNk1Tt3iixaqdGvaU6t8zQxhoDY5WUzxT5s=
+github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630121059-8cc33b26fc1d/go.mod h1:B/rlgH1yVswD1LvDQ0XzlviPB6v0yF7UHomnc+Nmdn8=
+github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630121124-9d25c2a7167a h1:QQvp7nUorj2X1srUyivKJ4STqO66ym/Zw+lY6mj5onc=
+github.com/pastukhov-aleksandr/bookstore_utils-go v0.0.0-20200630121124-9d25c2a7167a/go.mod h1:B/rlgH1yVswD1LvDQ0XzlviPB6v0yF7UHomnc+Nmdn8=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=

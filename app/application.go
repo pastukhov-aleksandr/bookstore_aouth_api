@@ -22,6 +22,7 @@ func StartApplication() {
 	router.GET("/oauth/access_token/:access_token_id", atHandler.GetById)
 	router.POST("/oauth/access_token", atHandler.Create)
 	router.POST("/oauth/refresh_token", atHandler.Create)
+	router.POST("/oauth/logout", atHandler.DeleteRefreshToken)
 
 	router.Run(":8080")
 }

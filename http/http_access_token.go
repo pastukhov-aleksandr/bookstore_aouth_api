@@ -12,6 +12,7 @@ import (
 type AccessTokenHandler interface {
 	GetById(*gin.Context)
 	Create(*gin.Context)
+	DeleteRefreshToken(*gin.Context)
 }
 
 type accessTokenHandler struct {
@@ -47,4 +48,19 @@ func (handler *accessTokenHandler) Create(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, accessToken)
+}
+
+func (handler *accessTokenHandler) DeleteRefreshToken(c *gin.Context) {
+	var request atDomain.AccessTokenRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		restErr := rest_errors.NewBadRequestError("invalid json body")
+		c.JSON(restErr.Status(), restErr)
+		return
+	}
+	err := handler.service.DeleteRefreshToken(request)
+	if err != nil {
+		c.JSON(err.Status(), err)
+		return
+	}
+	c.JSON(http.StatusOK, "Successfully logged out")
 }

@@ -2,6 +2,8 @@ package db
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gocql/gocql"
@@ -14,6 +16,7 @@ const (
 	queryGetAccessToken    = "SELECT refresh_tokens, user_id, client_id, expires FROM refresh_tokens WHERE refresh_tokens=?;"
 	queryCreateAccessToken = "INSERT INTO refresh_tokens(uuid, user_id, client_id, now) VALUES (?, ?, ?, ?);"
 	queryUpdateExpires     = "UPDATE refresh_tokens SET expires=? WHERE refresh_tokens=?;"
+	queryDeleteToken       = "DELETE FROM refresh_tokens WHERE uuid=? IF EXISTS;"
 )
 
 func NewRepository() DbRepository {
@@ -24,6 +27,7 @@ type DbRepository interface {
 	GetById(string) (*access_token.AccessToken, rest_errors.RestErr)
 	Create(access_token.AccessToken) rest_errors.RestErr
 	UpdateExpirationTime(access_token.AccessToken) rest_errors.RestErr
+	DeleteRefreshToken(int64, int64) rest_errors.RestErr
 }
 
 type dbRepository struct {
@@ -63,6 +67,16 @@ func (r *dbRepository) UpdateExpirationTime(at access_token.AccessToken) rest_er
 		at.AccessToken,
 	).Exec(); err != nil {
 		return rest_errors.NewInternalServerError("error when trying to update current resource", errors.New("database error"))
+	}
+	return nil
+}
+
+func (r *dbRepository) DeleteRefreshToken(userID int64, clientID int64) rest_errors.RestErr {
+	uuID := fmt.Sprintf("%s%s", strconv.FormatInt(userID, 10), strconv.FormatInt(clientID, 10))
+	if err := cassandra.GetSession().Query(queryDeleteToken,
+		uuID,
+	).Exec(); err != nil {
+		return rest_errors.NewInternalServerError("error when trying to delete refresh_tokens", errors.New("database error"))
 	}
 	return nil
 }
